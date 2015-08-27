@@ -69,8 +69,12 @@
                     Mana
                 </th>
                 <th>
-                    <input type="radio" ng-model="sortType" name="data_sort" value="A / H" />
-                    A / H
+                    <input type="radio" ng-model="sortType" name="data_sort" value="A" />
+                    A
+                </th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="H" />
+                    H
                 </th>
                 <th>
                     <input type="radio" ng-model="sortType" name="data_sort" value="Sick" />
@@ -107,7 +111,8 @@
                 <td style="font-weight: bold; text-align: center;">
                     <span ng-show="card.properties.ATTACK" style="font-size: 1.0em;">{{card.properties.ATTACK}}</span>
                     <span ng-hide="card.properties.ATTACK" style="font-size: 1.0em; color: red;">-</span>
-                    <span>/</span>
+                </td>
+                <td style="font-weight: bold; text-algin: center;">
                     <span ng-show="card.properties.HEALTH" style="font-size: 1.0em;">{{card.properties.HEALTH}}</span>
                     <span ng-hide="card.properties.HEALTH" style="font-size: 1.0em; color: red;">-</span>
                 </td>
