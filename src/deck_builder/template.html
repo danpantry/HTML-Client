@@ -50,17 +50,44 @@
                 "SCRAP"               | SCRAP              | n, or empty (for cards n/a)
                 "SCRAP_COST"          | SCRAP_COST         | n, or empty (for cards n/a)
             -->
-        <table>
+        <table id="deck_information">
             <tr>
-                <th>Type</th>
-                <th>Name</th>
-                <th>Count</th>
-                <th>Mana</th>
-                <th>A / H</th>
-                <th>Sick</th>
-                <th>Akt?</th>
-                <th>FX</th>
-                <th>?</th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="Type" />
+                    Type
+                </th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="Name" />
+                    Name
+                </th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="Count" />
+                    Count
+                </th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="Mana" />
+                    Mana
+                </th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="A / H" />
+                    A / H
+                </th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="Sick" />
+                    Sick
+                </th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="Atk?" />
+                    Atk?
+                </th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="FX" />
+                    FX
+                </th>
+                <th>
+                    <input type="radio" ng-model="sortType" name="data_sort" value="?" />
+                    ?
+                </th>
             </tr>
             <tr data-ng-repeat="card in cards">
                 <td>{{card.properties.creatureType}}</td>
