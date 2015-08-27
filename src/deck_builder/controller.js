@@ -231,6 +231,10 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
         $location.path("/lobby");
     };
 
+    $scope.$watch("sortType", function() {
+
+    });
+
     /**
     * This function updates the $scope variable savedDecks with the
     * saved decks that are stored in Local Storage.
