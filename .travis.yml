@@ -1,0 +1,27 @@
+language: node_js
+node_js: stable
+
+# Use container-based architecture
+sudo: false
+
+# There are no tests yet
+# script: npm run test
+script: ":"
+
+deploy:
+  skip_cleanup: true
+  provider: script
+  # Not created yet
+  # script: npm run deploy
+  script: ":"
+  on:
+    branch: master
+
+# Just add key to enable Duga notifications
+# notifications:
+#   webhooks:
+#     urls:
+#       - secure: "key"
+#     on_success: always
+#     on_failure: always
+#     on_start: never
