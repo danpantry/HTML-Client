@@ -1,11 +1,9 @@
 "use strict";
 
-function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, ErrorCreator) {
+function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, ErrorCreator, CurrentUser) {
     var SUCCESS = 200;
     var UPDATE_DELAY = 10000;
     var REFRESH_DELAY = 3000;
-
-    this.refreshing = false;
 
     // see if there is remembered form data
     var loginStorageMap = {
@@ -43,16 +41,8 @@ function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, 
                 try {
                     CardshifterServerAPI.setMessageListener(function(welcome) {
                         if(welcome.status === SUCCESS && welcome.message === "OK") {
-                            // taking the easy way out
-                            window.currentUser = {
-                                username: this.username,
-                                id: welcome.userId,
-                                playerIndex: null,
-                                game: {
-                                    id: null,
-                                    mod: null
-                                }
-                            };
+                            CurrentUser.username = this.username;
+                            CurrentUser.id = welcome.userId;
 
                             // for remembering form data
                             for(var storage in loginStorageMap) {
