@@ -36,6 +36,40 @@ function ChatController(CardshifterServerAPI, $timeout, ErrorCreator) {
             this.sending = false;
         }, MESSAGE_DELAY);
     };
+
+    /**
+    * Adds a chat message to the message feed. If the message
+    * feed is at the maximum limit of messages, deletes the oldest
+    * message.
+    */
+    function addChatMessage(message) {
+        if($scope.chatMessages.length === CHAT_FEED_LIMIT) {
+            // remove the oldest chat message
+            $scope.chatMessages.shift();
+        }
+
+        var now = new Date();
+
+        var YMD = [formatTimeNumber(now.getFullYear()), formatTimeNumber(now.getMonth() + 1), formatTimeNumber(now.getDate())].join('-');
+        var HMS = [formatTimeNumber(now.getHours()), formatTimeNumber(now.getMinutes()), formatTimeNumber(now.getSeconds())].join(':');
+        message.timestamp = YMD + " " + HMS;
+
+        $scope.chatMessages.push(message);
+    };
+
+    /**
+    * If a number is less than 10, this function will
+    * return a '0' appended to the beginning of that number
+    *
+    * This allows for cleanly formatted timestamps on chat messages.
+    *
+    * @param time:number -- The number to check
+    * @param string -- If the number is less than 10, '0' + time
+                    -- If not, just time itself.
+    */
+    function formatTimeNumber(time) {
+        return time < 10 ? "0" + time : time;
+    };
 }
 
 module.exports = ChatController;
