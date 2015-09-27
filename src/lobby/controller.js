@@ -1,7 +1,7 @@
 'use strict';
 
 // @ngInject
-function LobbyController(CardshifterServerAPI, $scope, $timeout, $rootScope, $location) {
+function LobbyController(CardshifterServerAPI, $scope, $timeout, $rootScope, $location, ErrorCreator) {
     var CHAT_FEED_LIMIT = 10;
     var ENTER_KEY = 13;
     var MESSAGE_DELAY = 3000;
@@ -25,17 +25,14 @@ function LobbyController(CardshifterServerAPI, $scope, $timeout, $rootScope, $lo
         "chat": addChatMessage,
         "inviteRequest": displayInvite,
         "availableMods": displayMods,
-        "newgame": enterNewGame
+        "newgame": enterNewGame,
+        "error": displayError
     };
 
     var getUsers = new CardshifterServerAPI.messageTypes.ServerQueryMessage("USERS", "");
     CardshifterServerAPI.sendMessage(getUsers);
 
-    CardshifterServerAPI.setMessageListener(function(message) {
-        $scope.$apply(function() {
-            commandMap[message.command](message);
-        })
-    }, ["userstatus", "chat", "inviteRequest", "availableMods", "newgame"]);
+    CardshifterServerAPI.setMessageListener(commandMap, $scope);
 
     /**
     * This function is called when the user hits the "Send" button
@@ -78,9 +75,7 @@ function LobbyController(CardshifterServerAPI, $scope, $timeout, $rootScope, $lo
             gameMod = $scope.selected_mod;
         } else {
             // Error if user has not chosen a mod or opponent
-            var message = new CardshifterServerAPI.messageTypes.ChatMessage(
-                        "Client error: Select both a game type and an opponent user before you can start a game.");
-            addChatMessage(message);
+            ErrorCreator.create("Select both a game type and an opponent user before you can start a game.");
         }
     };
 
@@ -125,9 +120,7 @@ function LobbyController(CardshifterServerAPI, $scope, $timeout, $rootScope, $lo
             CardshifterServerAPI.sendMessage(getCards);
             $location.path("/deck_builder");
         } else {
-            var message = new CardshifterServerAPI.messageTypes.ChatMessage(
-                        "Client error: Select a game type before you can open the deck builder.");
-            addChatMessage(message);
+            ErrorCreator.create("Select a game type before you can open the deck builder.");
         }
     };
 
@@ -213,6 +206,10 @@ function LobbyController(CardshifterServerAPI, $scope, $timeout, $rootScope, $lo
     function formatTimeNumber(time) {
         return time < 10 ? "0" + time : time;
     };
+
+    function displayError(message) {
+        ErrorCreator.create(message.message);
+    }
 }
 
 module.exports = LobbyController;
