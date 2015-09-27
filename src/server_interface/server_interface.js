@@ -6,8 +6,6 @@ var SOCKET_OPEN = 1;
 
 var MAIN_LOBBY = 1;
 
-var eventTypes = [];
-
 /**
 * The base class Message for all the other message types
 * to inherit from.
@@ -59,6 +57,7 @@ function flatten(obj) {
 
 var CardshifterServerAPI = {
     socket: null,
+    totalCommandMap = {},
     messageTypes: {
         /**
         * Incoming login message.
@@ -264,6 +263,26 @@ var CardshifterServerAPI = {
             this.socket = null;
         }
 
+        /**
+        * When a message is received, the totalCommandMap's keys
+        * are checked for the message command. If it is found,
+        * the listener attached with that key is run, and $apply
+        * method of that key's scope is run, too.
+        */
+        socket.onmessage = function(message) {
+            var data = JSON.parse(message.data);
+            var command = data.command;
+
+            console.log("Received message", data);
+
+            if(this.commandMap.hasOwnProperty(command)) {
+                var toRun = this.commandMap[command];
+                toRun.scope.$apply(function() {
+                    toRun.listener(data);
+                });
+            }
+        }
+
         this.socket = socket;
     },
 
@@ -290,35 +309,28 @@ var CardshifterServerAPI = {
     },
 
     /**
-    * Sets an event listener for when the server sends a message
-    * and the message command is one of the keys in the commandMap
+    * Adds more listeners for incoming messages for this
+    * API to watch for.
     *
-    * @param commandMap:Object -- The keys are the command types and the values are
-    *       functions to run when a message of that command is encountered.
-    * @param scope:$scope -- The scope of the controller running this.
+    * This is here so that, when there are multiple controllers
+    * on a single page, they will not all override each other by
+    * using the old setMessageListener.
+    *
+    * When listeners are added to the totalCommandMap, they are
+    * put in an object along with the scope that was passed in.
+    *
+    * @param commandMap:object -- A map. Keys = commands, values = listeners
+    * @param scope:$scope -- The scope of the controller running this
     */
-    setMessageListener: function(commandMap, scope) {
-        this.socket.onmessage = function(message) {
-            var data = JSON.parse(message.data);
-            var command = data.command;
-
-            console.log("Received message", data);
-
+    addMessageListener: function(commandMap, scope) {
+        for(var command in commandMap) {
             if(commandMap.hasOwnProperty(command)) {
-                scope.$apply(function() {
-                    commandMap[command](data);
-                });
+                this.totalCommandMap[command] = {
+                    listener: commandMap[command],
+                    scope: scope
+                };
             }
         }
-    },
-
-    /**
-    * Adds types to the types to listen for in the message event listener
-    *
-    * @param types:[string] -- The types to add
-    */
-    addEventTypes: function(types) {
-        eventTypes = eventTypes.concat(types);
     },
 
     /**
@@ -326,6 +338,7 @@ var CardshifterServerAPI = {
     */
     removeMessageListener: function() {
         this.socket.onmessage = null;
+        this.totalCommandMap = {};
     }
 };
 
