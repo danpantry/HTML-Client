@@ -34,50 +34,46 @@ function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, 
         this.loggedIn = true;
         var finalServer = (this.server === "other" ? this.other_server : this.server);
 
+        if(!this.username) {
+            ErrorCreator.create("Please enter a username");
+
+            this.loggedIn = false;
+            return;
+        }
+
         CardshifterServerAPI.init(finalServer, this.is_secure, function() {
-            if(this.username) {
-                var login = new CardshifterServerAPI.messageTypes.LoginMessage(this.username);
 
-                try {
-                    CardshifterServerAPI.setMessageListener(function(welcome) {
-                        if(welcome.status === SUCCESS && welcome.message === "OK") {
-                            CurrentUser.username = this.username;
-                            CurrentUser.id = welcome.userId;
+            var login = new CardshifterServerAPI.messageTypes.LoginMessage(this.username);
 
-                            // for remembering form data
-                            for(var storage in loginStorageMap) {
-                                if(loginStorageMap.hasOwnProperty(storage)) {
-                                    localStorage.setItem(storage, this[loginStorageMap[storage]]);
-                                }
+            CardshifterServerAPI.addMessageListener({
+                "loginresponse": function(welcome) {
+                    if(welcome.status === SUCCESS && welcome.message === "OK") {
+                        CurrentUser.username = this.username;
+                        CurrentUser.id = welcome.userid;
+
+                        // for remembering form data
+                        for(var storage in loginStorageMap) {
+                            if(loginStorageMap.hasOwnProperty(storage)) {
+                                localStorage.setItem(storage, this[loginStorageMap[storage]]);
                             }
-
-                            $rootScope.$apply(function() {
-                                $location.path("/lobby");
-                            });
-                        } else {
-                            console.log("server messsage: " + welcome.message);
-                            this.loggedIn = false;
-                            this.$apply();
                         }
-                    }, ["loginresponse"]);
-                    CardshifterServerAPI.sendMessage(login);
 
-                } catch(e) {
-                    // notify the user that there was an issue logging in (loginmessage issue)
-                    console.log("LoginMessage error(error 2): " + e);
-                    this.loggedIn = false;
-                    this.$apply();
+                        $location.path("/lobby");
+                    } else {
+                        console.log("server messsage: " + welcome.message);
+                        this.loggedIn = false;
+                        this.$apply();
+                    }
                 }
-            } else {
-                console.log("enter a username");
-                this.loggedIn = false;
-                this.$apply();
-            }
+            }, this);
+            CardshifterServerAPI.sendMessage(login);
         }, function() {
             // notify the user that there was an issue logging in (websocket issue)
+            ErrorCreator.create("There was a Websocket-related issue logging in");
+
             console.log("Websocket error(error 1)");
             this.loggedIn = false;
-            this.$apply();
+            //this.$apply();
         });
     }
 }
