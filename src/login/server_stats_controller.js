@@ -1,6 +1,13 @@
 "use strict";
 
-function ServerStatsController(CardshifterServerAPI, ServerList, $timeout) {
+function ServerStatsController(CardshifterServerAPI, $timeout) {
+    this.servers = [
+        new ServerInfo("Local Host", "ws://127.0.0.1:4243"),
+        new ServerInfo("Dwarf Towers", "ws://dwarftowers.com:4243"),
+        new ServerInfo("Zomis.net", "ws://stats.zomis.net:4243"),
+        new ServerInfo("Other...", "other")
+    ];
+
     this.refreshServers = function() {
         this.refreshing = true;
         $timeout(function() {
@@ -21,7 +28,7 @@ function ServerStatsController(CardshifterServerAPI, ServerList, $timeout) {
         */
         var i = 0;
         (function getServerInfo() {
-            var thisServer = ServerList.servers[i];
+            var thisServer = this.servers[i];
 
             if(thisServer.name === "Other...") {
                 return;
@@ -37,36 +44,48 @@ function ServerStatsController(CardshifterServerAPI, ServerList, $timeout) {
                 var getUsers = new CardshifterServerAPI.messageTypes.ServerQueryMessage("STATUS", "");
 
                 CardshifterServerAPI.sendMessage(getUsers);
-                CardshifterServerAPI.setMessageListener(function(message) {
+                CardshifterServerAPI.addMessageListener({
+                    "status": function(message) {
+                        /* For some reason, local host always said 1 user online, but dwarftowers did not. */
+                        thisServer.userCount = message.users;
+                        thisServer.availableMods = message.mods.length;
+                        thisServer.gamesRunning = message.games;
+                        thisServer.ais = message.ais;
 
-                    /* For some reason, local host always said 1 user online, but dwarftowers did not. */
-                    thisServer.userCount = message.users;
-                    thisServer.availableMods = message.mods.length;
-                    thisServer.gamesRunning = message.games;
-                    thisServer.ais = message.ais;
+                        // Should these (^^) be dynamically loaded?
 
-                    // Should these (^^) be dynamically loaded?
+                        CardshifterServerAPI.socket.close();
+                        CardshifterServerAPI.socket = null;
 
-                    CardshifterServerAPI.socket.close();
-                    CardshifterServerAPI.socket = null;
-
-                    i++;
-                    if(ServerList.servers[i]) {
-                        getServerInfo();
+                        i++;
+                        if(this.servers[i]) {
+                            getServerInfo();
+                        }
                     }
-                }, ["status"]);
+                }, $scope);
             }, function() {
                 thisServer.latency = 0;
                 thisServer.isOnline = false;
                 thisServer.userCount = 0;
 
                 i++;
-                if(ServerList.servers[i]) {
+                if(this.servers[i]) {
                     getServerInfo();
                 }
             });
         })();
     };
+}
+
+function ServerInfo(name, address) {
+    this.name = name;
+    this.address = address;
+    this.isOnline = false;
+    this.userCount = 0;
+    this.latency = 0;
+    this.availableMods = 0;
+    this.gamesRunning = 0;
+    this.ais = 0;
 }
 
 module.exports = ServerStatsController;
