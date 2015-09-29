@@ -57,7 +57,7 @@ function flatten(obj) {
 
 var CardshifterServerAPI = {
     socket: null,
-    totalCommandMap = {},
+    totalCommandMap: {},
     messageTypes: {
         /**
         * Incoming login message.
