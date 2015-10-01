@@ -5,9 +5,13 @@ function ChatController(CardshifterServerAPI, $timeout, ErrorCreator) {
     var ENTER_KEY = 13;
     var MESSAGE_DELAY = 3000;
 
-    $scope.chatMessages = [];
+    this.chatMessages = [];
 
     var ping = document.getElementById("ping"); // is this angulary?
+
+    CardshifterServerAPI({
+        "chat": addChatMessage
+    }, $scope);
 
     /**
     * This function is called when the user hits the "Send" button
@@ -28,7 +32,7 @@ function ChatController(CardshifterServerAPI, $timeout, ErrorCreator) {
         }
 
         this.sending = true;
-        var chatMessage = new CardshifterServerAPI.messageTypes.ChatMessage($scope.user_chat_message);
+        var chatMessage = new CardshifterServerAPI.messageTypes.ChatMessage(this.user_chat_message);
         CardshifterServerAPI.sendMessage(chatMessage);
 
         this.user_chat_message = ""; // clear the input box
@@ -43,9 +47,9 @@ function ChatController(CardshifterServerAPI, $timeout, ErrorCreator) {
     * message.
     */
     function addChatMessage(message) {
-        if($scope.chatMessages.length === CHAT_FEED_LIMIT) {
+        if(this.chatMessages.length === CHAT_FEED_LIMIT) {
             // remove the oldest chat message
-            $scope.chatMessages.shift();
+            this.chatMessages.shift();
         }
 
         var now = new Date();
@@ -54,7 +58,7 @@ function ChatController(CardshifterServerAPI, $timeout, ErrorCreator) {
         var HMS = [formatTimeNumber(now.getHours()), formatTimeNumber(now.getMinutes()), formatTimeNumber(now.getSeconds())].join(':');
         message.timestamp = YMD + " " + HMS;
 
-        $scope.chatMessages.push(message);
+        this.chatMessages.push(message);
     };
 
     /**

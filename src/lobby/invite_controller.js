@@ -1,12 +1,16 @@
 "use strict";
 
-function InviteController() {
+function InviteController(CardshifterServerAPI) {
     this.invite = {
         id: null,
         name: null,
         type: null
     };
     this.gotInvite = false;
+
+    CardshifterServerAPI.addMessageListener({
+        "invite": displayInvite
+    }, $scope);
 
     /**
     * This function is called when either the "accept" or "decline"
