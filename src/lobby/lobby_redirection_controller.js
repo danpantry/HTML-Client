@@ -1,9 +1,11 @@
+"use strict";
+
 function LobbyRedirectionController(CardshifterServerAPI, CurrentUser, $location, ErrorCreator) {
     var gameMod = "";
 
     CardshifterServerAPI.addMessageListener({
         "newgame": enterNewGame
-    })
+    }, $scope);
 
     /**
     * This function is called when the user has chosen a mod,
@@ -11,12 +13,12 @@ function LobbyRedirectionController(CardshifterServerAPI, CurrentUser, $location
     *
     * This function sends a StartGameRequest to the server.
     */
-    $scope.startGame = function() {
-        if($scope.selected_mod && $scope.selected_opponent) {
-            var startGame = new CardshifterServerAPI.messageTypes.StartGameRequest($scope.selected_opponent,
-                                                                                   $scope.selected_mod);
+    this.startGame = function() {
+        if(this.selected_mod && this.selected_opponent) {
+            var startGame = new CardshifterServerAPI.messageTypes.StartGameRequest(this.selected_opponent,
+                                                                                   this.selected_mod);
             CardshifterServerAPI.sendMessage(startGame);
-            gameMod = $scope.selected_mod;
+            gameMod = this.selected_mod;
         } else {
             // Error if user has not chosen a mod or opponent
             ErrorCreator.create("Select both a game type and an opponent user before you can start a game.");
@@ -36,9 +38,9 @@ function LobbyRedirectionController(CardshifterServerAPI, CurrentUser, $location
     * the card information automatically, as opposed to if the user
     * were entering a new game.
     */
-    $scope.openDeckBuilder = function() {
-        if($scope.selected_mod) {
-            CurrentUser.game.mod = $scope.selected_mod;
+    this.openDeckBuilder = function() {
+        if(this.selected_mod) {
+            CurrentUser.game.mod = this.selected_mod;
 
             var getCards = new CardshifterServerAPI.messageTypes.ServerQueryMessage("DECK_BUILDER", currentUser.game.mod);
             CardshifterServerAPI.sendMessage(getCards);
@@ -61,3 +63,5 @@ function LobbyRedirectionController(CardshifterServerAPI, CurrentUser, $location
         $location.path("/deck_builder");
     };
 }
+
+module.exports = LobbyRedirectionController;
