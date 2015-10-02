@@ -8,6 +8,11 @@ function ActionController(CardshifterServerAPI, ErrorCreator, PlayerInfos) {
     this.selected = [];
     this.targetsMessage = {};
 
+    CardshifterServerAPI.addMessageListener({
+        "usable": addUsableAction,
+        "resetActions": resetActions
+    }, $scope);
+
     this.startAction = function(action) {
         if(!action.targetRequired) { // No targets? No confirmation. Do we understand each other?
             this.currentAction = action;
