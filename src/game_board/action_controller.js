@@ -1,6 +1,13 @@
 "use strict";
 
 function ActionController(CardshifterServerAPI, ErrorCreator, PlayerInfos) {
+    this.actions = [];
+    this.currentAction = {};
+    this.doingAction = false;
+    this.targets = [];
+    this.selected = [];
+    this.targetsMessage = {};
+
     this.startAction = function(action) {
         if(!action.targetRequired) { // No targets? No confirmation. Do we understand each other?
             this.currentAction = action;
