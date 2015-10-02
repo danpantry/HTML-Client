@@ -1,18 +1,18 @@
 'use strict';
 
 // @ngInject
-function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $location, ErrorCreator) {
+function DeckbuilderController(CardshifterServerAPI, $rootScope, $location, ErrorCreator) {
     var DECK_STORAGE = "CARDSHIFTER_DECK_STORAGE";
 
-    $scope.cards = [];
-    $scope.maxCards = 0;
-    $scope.minCards = 0;
-    $scope.currentDeck = {};
-    $scope.cardInfo = null;
-    $scope.currentDeckName = "untitled";
-    $scope.savedDecks = [];
-    $scope.doneLoading = false;
-    $scope.enteringGame = currentUser.game.id;
+    this.cards = [];
+    this.maxCards = 0;
+    this.minCards = 0;
+    this.currentDeck = {};
+    this.cardInfo = null;
+    this.currentDeckName = "untitled";
+    this.savedDecks = [];
+    this.doneLoading = false;
+    this.enteringGame = currentUser.game.id;
 
     // This is sort of a repeat of currentDeck, because I didn't know that the client had to send the message back
     var deckConfig = null; // the message received from the server
@@ -36,17 +36,17 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
             for(var card in deck.cardData) {
                 if(deck.cardData.hasOwnProperty(card)) {
                     deck.cardData[card].max = deck.max[card] || deck.maxPerCard;
-                    $scope.currentDeck[deck.cardData[card].id] = 0;
+                    this.currentDeck[deck.cardData[card].id] = 0;
                 }
             }
 
-            $scope.cards = deck.cardData;
-            $scope.maxCards = deck.maxSize;
-            $scope.minCards = deck.minSize;
+            this.cards = deck.cardData;
+            this.maxCards = deck.maxSize;
+            this.minCards = deck.minSize;
             updateSavedDecks();
-            $scope.doneLoading = true;
+            this.doneLoading = true;
         }
-    }, $scope);
+    }, this);
 
     /**
     * This is called when the minus-sign button for a card
@@ -58,9 +58,9 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
     *
     * @param card:Object -- The card to decrement
     */
-    $scope.decrement = function(card) {
-        if($scope.currentDeck[card.id] !== 0) {
-            $scope.currentDeck[card.id]--;
+    this.decrement = function(card) {
+        if(this.currentDeck[card.id] !== 0) {
+            this.currentDeck[card.id]--;
         }
     };
     /**
@@ -75,10 +75,10 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
     *
     * @param card:Object -- The card to increment
     */
-    $scope.increment = function(card) {
-        if($scope.getTotalSelected() !== $scope.maxCards &&
-           $scope.currentDeck[card.id] !== card.max) {
-            $scope.currentDeck[card.id]++;
+    this.increment = function(card) {
+        if(this.getTotalSelected() !== this.maxCards &&
+           this.currentDeck[card.id] !== card.max) {
+            this.currentDeck[card.id]++;
         }
     };
 
@@ -87,11 +87,11 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
     * to, in fractional form, how many cards are in the user's
     * current deck.
     */
-    $scope.getTotalSelected = function() {
+    this.getTotalSelected = function() {
         var total = 0;
-        for(var card in $scope.currentDeck) {
-            if($scope.currentDeck.hasOwnProperty(card)) {
-                total += $scope.currentDeck[card];
+        for(var card in this.currentDeck) {
+            if(this.currentDeck.hasOwnProperty(card)) {
+                total += this.currentDeck[card];
             }
         }
         return total;
@@ -101,15 +101,15 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
     * This is called when the card link of a card in the
     * available cards table has been clicked.
     *
-    * Once this function is called, it loads $scope.cardInfo
+    * Once this function is called, it loads this.cardInfo
     * with the card object associated with the link that was
     * clicked and will simply stick it into a card directive
     * which is displayed at the top of the screen.
     *
-    * TODO: Dynamically load $scope.cardInfo with card properties. #60
+    * TODO: Dynamically load this.cardInfo with card properties. #60
     */
-    $scope.showDetails = function(card) {
-        $scope.cardInfo = card;
+    this.showDetails = function(card) {
+        this.cardInfo = card;
     };
 
     /**
@@ -121,35 +121,32 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
     * a name, or has given it name but it already exists, this function
     * will stop immediately.
     */
-    $scope.saveDeck = function() {
-        if($scope.getTotalSelected() !== $scope.minCards) {
+    this.saveDeck = function() {
+        if(this.getTotalSelected() !== this.minCards) {
             ErrorCreator.create("Not enough cards");
-            console.log("not enough cards");
             return;
         }
-        if(!$scope.deckName) {
+        if(!this.deckName) {
             ErrorCreator.create("Please enter a name");
-            console.log("enter name");
             return;
         }
-        if(getDeckIndex($scope.deckName)) {
+        if(getDeckIndex(this.deckName)) {
             ErrorCreator.create("A deck with that name already exists");
-            console.log("deck already exists");
             return;
         }
 
         var savedDecks = JSON.parse(localStorage.getItem(DECK_STORAGE));
 
         var newDeck = {
-            name: $scope.deckName,
-            cards: $scope.currentDeck
+            name: this.deckName,
+            cards: this.currentDeck
         };
 
         savedDecks.decks[currentUser.game.mod].push(newDeck);
         localStorage.setItem(DECK_STORAGE, JSON.stringify(savedDecks));
         updateSavedDecks();
 
-        $scope.switchDeck(newDeck);
+        this.switchDeck(newDeck);
     };
 
     /**
@@ -160,9 +157,9 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
     *
     * @param deck:Object -- The deck to load
     */
-    $scope.switchDeck = function(deck) {
-        $scope.currentDeckName = deck.name;
-        $scope.currentDeck = deck.cards;
+    this.switchDeck = function(deck) {
+        this.currentDeckName = deck.name;
+        this.currentDeck = deck.cards;
     };
 
     /**
@@ -175,7 +172,7 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
     *
     * @param deckName:string -- The name of the deck to delete
     */
-    $scope.deleteDeck = function(deckName) {
+    this.deleteDeck = function(deckName) {
         var savedDecks = JSON.parse(localStorage.getItem(DECK_STORAGE));
         savedDecks.decks[currentUser.game.mod].splice(getDeckIndex(deckName), 1);
         localStorage.setItem(DECK_STORAGE, JSON.stringify(savedDecks));
@@ -194,14 +191,14 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
     * This function will send all the deck information to the server
     * and then redirect to the game board screen.
     */
-    $scope.enterGame = function() {
-        if($scope.getTotalSelected() === $scope.minCards) {
+    this.enterGame = function() {
+        if(this.getTotalSelected() === this.minCards) {
 
             // remove all unpicked cards from the deck like the Java client(needed?)
-            for(var card in $scope.currentDeck) {
-                if($scope.currentDeck.hasOwnProperty(card)) {
-                    if($scope.currentDeck[card] === 0) {
-                        delete $scope.currentDeck[card];
+            for(var card in this.currentDeck) {
+                if(this.currentDeck.hasOwnProperty(card)) {
+                    if(this.currentDeck[card] === 0) {
+                        delete this.currentDeck[card];
                     }
                 }
             }
@@ -211,7 +208,7 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
                 delete deckConfig.configs.Deck.cardData[card].max;
             }
 
-            deckConfig.configs.Deck.chosen = $scope.currentDeck;
+            deckConfig.configs.Deck.chosen = this.currentDeck;
             CardshifterServerAPI.sendMessage(deckConfig);
 
             $location.path("/game_board");
@@ -231,33 +228,33 @@ function DeckbuilderController(CardshifterServerAPI, $scope, $rootScope, $locati
     * This function simply redirects the page back to the lobby
     * screen.
     */
-    $scope.goBack = function() {
+    this.goBack = function() {
         $location.path("/lobby");
     };
 
     /**
-    * This function updates the $scope variable savedDecks with the
+    * This function updates the this variable savedDecks with the
     * saved decks that are stored in Local Storage.
     *
-    * This function will only load $scope.savedDecks with the decks of
+    * This function will only load this.savedDecks with the decks of
     * the mod that the game or user specified.
     */
     function updateSavedDecks() {
-        $scope.savedDecks = JSON.parse(localStorage.getItem(DECK_STORAGE)).decks[currentUser.game.mod];
+        this.savedDecks = JSON.parse(localStorage.getItem(DECK_STORAGE)).decks[currentUser.game.mod];
     }
 
     /**
     * This function will search through all the saved decks in
-    * $scope.savedDecks and try to find the deck with the name
+    * this.savedDecks and try to find the deck with the name
     * deckName.
     *
     * @param deckName:string -- The name of the deck to look for.
-    * @return number/boolean -- The index of the deck with the correct name in $scope.savedDecks
-    *                        -- false if the deck was not found in $scope.savedDecks
+    * @return number/boolean -- The index of the deck with the correct name in this.savedDecks
+    *                        -- false if the deck was not found in this.savedDecks
     */
     function getDeckIndex(deckName) {
-        for(var i = 0, length = $scope.savedDecks.length; i < length; i++) {
-            if($scope.savedDecks[i].name === deckName) {
+        for(var i = 0, length = this.savedDecks.length; i < length; i++) {
+            if(this.savedDecks[i].name === deckName) {
                 return i;
             }
         }
