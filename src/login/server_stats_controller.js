@@ -1,10 +1,13 @@
 "use strict";
 
 function ServerStatsController(CardshifterServerAPI, $timeout, $scope) {
+    var UPDATE_DELAY = 10000;
+    var REFRESH_DELAY = 3000;
+
     $scope.refreshServers = function() {
         this.refreshing = true;
         $timeout(function() {
-            this.refreshing = false;
+            $scope.refreshing = false;
         }, REFRESH_DELAY);
 
         /**
@@ -21,7 +24,7 @@ function ServerStatsController(CardshifterServerAPI, $timeout, $scope) {
         */
         var i = 0;
         (function getServerInfo() {
-            var thisServer = this.servers[i];
+            var thisServer = $scope.servers[i];
 
             if(thisServer.name === "Other...") {
                 return;
@@ -36,7 +39,6 @@ function ServerStatsController(CardshifterServerAPI, $timeout, $scope) {
                 /* This must be created here because this is run after init is don't, so command is set properly */
                 var getUsers = new CardshifterServerAPI.messageTypes.ServerQueryMessage("STATUS", "");
 
-                CardshifterServerAPI.sendMessage(getUsers);
                 CardshifterServerAPI.addMessageListener({
                     "status": function(message) {
                         /* For some reason, local host always said 1 user online, but dwarftowers did not. */
@@ -51,18 +53,20 @@ function ServerStatsController(CardshifterServerAPI, $timeout, $scope) {
                         CardshifterServerAPI.socket = null;
 
                         i++;
-                        if(this.servers[i]) {
+                        if($scope.servers[i]) {
                             getServerInfo();
                         }
                     }
                 }, $scope);
+                CardshifterServerAPI.sendMessage(getUsers);
+
             }, function() {
                 thisServer.latency = 0;
                 thisServer.isOnline = false;
                 thisServer.userCount = 0;
 
                 i++;
-                if(this.servers[i]) {
+                if($scope.servers[i]) {
                     getServerInfo();
                 }
             });

@@ -2,8 +2,6 @@
 
 function LoginController(CardshifterServerAPI, $location, $scope, $timeout, ErrorCreator, CurrentUser) {
     var SUCCESS = 200;
-    var UPDATE_DELAY = 10000;
-    var REFRESH_DELAY = 3000;
 
     // see if there is remembered form data
     var loginStorageMap = {

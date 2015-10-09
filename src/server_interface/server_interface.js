@@ -269,19 +269,21 @@ var CardshifterServerAPI = {
         * the listener attached with that key is run, and $apply
         * method of that key's scope is run, too.
         */
-        socket.onmessage = function(message) {
-            var data = JSON.parse(message.data);
-            var command = data.command;
+        socket.onmessage = (function(commandMap) {
+            return function(message) {
+                var data = JSON.parse(message.data);
+                var command = data.command;
 
-            console.log("Received message", data);
+                console.log("Received message", data);
 
-            if(this.commandMap.hasOwnProperty(command)) {
-                var toRun = this.commandMap[command];
-                toRun.scope.$apply(function() {
-                    toRun.listener(data);
-                });
+                if(commandMap.hasOwnProperty(command)) {
+                    var toRun = commandMap[command];
+                    toRun.scope.$apply(function() {
+                        toRun.listener(data);
+                    });
+                }
             }
-        }
+        })(this.totalCommandMap);
 
         this.socket = socket;
     },
