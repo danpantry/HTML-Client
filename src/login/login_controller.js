@@ -46,7 +46,7 @@ function LoginController(CardshifterServerAPI, $location, $scope, $timeout, Erro
 
         CardshifterServerAPI.init(finalServer, this.is_secure, function() {
 
-            var login = new CardshifterServerAPI.messageTypes.LoginMessage(this.username);
+            var login = new CardshifterServerAPI.messageTypes.LoginMessage($scope.username);
 
             CardshifterServerAPI.addMessageListener({
                 "loginresponse": function(welcome) {
@@ -63,12 +63,11 @@ function LoginController(CardshifterServerAPI, $location, $scope, $timeout, Erro
 
                         $location.path("/lobby");
                     } else {
-                        console.log("server messsage: " + welcome.message);
                         this.loggedIn = false;
                         this.$apply();
                     }
                 }
-            }, this);
+            }, $scope);
             CardshifterServerAPI.sendMessage(login);
         }, function() {
             ErrorCreator.create("There was a Websocket-related issue logging in");
