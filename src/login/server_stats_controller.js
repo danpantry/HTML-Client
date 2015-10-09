@@ -72,6 +72,8 @@ function ServerStatsController(CardshifterServerAPI, $timeout, $scope) {
             });
         })();
     };
+
+    $scope.refreshServers();
 }
 
 module.exports = ServerStatsController;
