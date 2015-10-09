@@ -1,6 +1,6 @@
 "use strict";
 
-function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, ErrorCreator, CurrentUser) {
+function LoginController(CardshifterServerAPI, $location, $scope, $timeout, ErrorCreator, CurrentUser) {
     var SUCCESS = 200;
     var UPDATE_DELAY = 10000;
     var REFRESH_DELAY = 3000;
@@ -29,7 +29,7 @@ function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, 
     * a username, or if there were any errors at all in logging
     * in.
     */
-    this.login = function() {
+    $scope.login = function() {
         this.loggedIn = true;
         var finalServer = (this.server === "other" ? this.other_server : this.server);
 
