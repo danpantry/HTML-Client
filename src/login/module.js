@@ -1,7 +1,7 @@
 'use strict';
 var angular = require('angular');
 var ngRoute = require('angular-route');
-var LoginController = require('./controller');
+var LoginController = require('./login_controller');
 var template = require('./login.html');
 var serverInterface = require('../server_interface/module');
 
