@@ -1,14 +1,7 @@
 "use strict";
 
-function ServerStatsController(CardshifterServerAPI, $timeout) {
-    this.servers = [
-        new ServerInfo("Local Host", "ws://127.0.0.1:4243"),
-        new ServerInfo("Dwarf Towers", "ws://dwarftowers.com:4243"),
-        new ServerInfo("Zomis.net", "ws://stats.zomis.net:4243"),
-        new ServerInfo("Other...", "other")
-    ];
-
-    this.refreshServers = function() {
+function ServerStatsController(CardshifterServerAPI, $timeout, $scope) {
+    $scope.refreshServers = function() {
         this.refreshing = true;
         $timeout(function() {
             this.refreshing = false;
@@ -75,17 +68,6 @@ function ServerStatsController(CardshifterServerAPI, $timeout) {
             });
         })();
     };
-}
-
-function ServerInfo(name, address) {
-    this.name = name;
-    this.address = address;
-    this.isOnline = false;
-    this.userCount = 0;
-    this.latency = 0;
-    this.availableMods = 0;
-    this.gamesRunning = 0;
-    this.ais = 0;
 }
 
 module.exports = ServerStatsController;

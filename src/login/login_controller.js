@@ -19,6 +19,13 @@ function LoginController(CardshifterServerAPI, $location, $scope, $timeout, Erro
         }
     }
 
+    $scope.servers = [
+        new ServerInfo("Local Host", "ws://127.0.0.1:4243"),
+        new ServerInfo("Dwarf Towers", "ws://dwarftowers.com:4243"),
+        new ServerInfo("Zomis.net", "ws://stats.zomis.net:4243"),
+        new ServerInfo("Other...", "other")
+    ];
+
     /*
     * Called by the login form. This function will send a login
     * request to the server specified in the login form. Upon a
@@ -70,6 +77,18 @@ function LoginController(CardshifterServerAPI, $location, $scope, $timeout, Erro
             this.loggedIn = false;
         });
     }
+
+}
+
+function ServerInfo(name, address) {
+    this.name = name;
+    this.address = address;
+    this.isOnline = false;
+    this.userCount = 0;
+    this.latency = 0;
+    this.availableMods = 0;
+    this.gamesRunning = 0;
+    this.ais = 0;
 }
 
 module.exports = LoginController;
