@@ -71,3 +71,5 @@ function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, 
         });
     }
 }
+
+module.exports = LoginController;
