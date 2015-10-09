@@ -20,15 +20,14 @@ function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, 
     }
 
     /*
-    * Called by the login form. This function will to the server
-    * specified in the login form. Upon a successful reply, the
-    * code will setup currentUser and redirect to the lobby.
+    * Called by the login form. This function will send a login
+    * request to the server specified in the login form. Upon a
+    * successful reply, the code will setup currentUser and
+    * redirect to the lobby.
     *
     * This function will not complete if the user has not entered
     * a username, or if there were any errors at all in logging
-    * in (either something with the Socket messed up, or the
-    * welcome message response from the server did not contain
-    * the properties that would indicate a success)
+    * in.
     */
     this.login = function() {
         this.loggedIn = true;
@@ -36,7 +35,6 @@ function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, 
 
         if(!this.username) {
             ErrorCreator.create("Please enter a username");
-
             this.loggedIn = false;
             return;
         }
@@ -68,12 +66,8 @@ function LoginController(CardshifterServerAPI, $location, $rootScope, $timeout, 
             }, this);
             CardshifterServerAPI.sendMessage(login);
         }, function() {
-            // notify the user that there was an issue logging in (websocket issue)
             ErrorCreator.create("There was a Websocket-related issue logging in");
-
-            console.log("Websocket error(error 1)");
             this.loggedIn = false;
-            //this.$apply();
         });
     }
 }
