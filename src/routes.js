@@ -4,7 +4,7 @@ import { Route, IndexRoute } from 'react-router';
 import App from './index.js';
 import Login from "./scenes/login";
 import Lobby from "./scenes/lobby";
-import DeckBuilder from "./scenes/deck_builder/index.js";
+import DeckBuilder from "./scenes/deck_builder";
 import GameScreen from "./scenes/game_screen/index.js";
 
 export default (

@@ -1,0 +1,1 @@
+export {DeckBuilderRouteContainer as default} from './containers';
