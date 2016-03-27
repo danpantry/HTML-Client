@@ -5,7 +5,7 @@ import App from './index.js';
 import Login from "./scenes/login";
 import Lobby from "./scenes/lobby";
 import DeckBuilder from "./scenes/deck_builder";
-import GameScreen from "./scenes/game_screen/index.js";
+import GameScreen from "./scenes/game_screen";
 
 export default (
     <Route path="/" component={App}>

@@ -1,0 +1,1 @@
+export {GameScreenRoute} from './GameScreenRoute';
