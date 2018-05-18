@@ -1,4 +1,5 @@
 'use strict';
+var debug = require('debug');
 
 // checks if the string begins with either ws:// or wss://
 var wsProtocolFinder = /ws(s)?:\/\//;
@@ -57,7 +58,7 @@ function flatten(obj) {
     return result;
 }
 
-function CardshifterServerAPI(debug) {
+function CardshifterServerAPI() {
     return {
         socket: null,
         messageTypes: {
