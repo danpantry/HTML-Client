@@ -1,6 +1,4 @@
 'use strict';
-var debug = require('debug');
-
 // checks if the string begins with either ws:// or wss://
 var wsProtocolFinder = /ws(s)?:\/\//;
 var SOCKET_OPEN = 1;
@@ -58,7 +56,7 @@ function flatten(obj) {
     return result;
 }
 
-function CardshifterServerAPI() {
+function CardshifterServerAPI(debug) {
     return {
         socket: null,
         messageTypes: {
@@ -331,5 +329,6 @@ function CardshifterServerAPI() {
         }
     };
 }
+CardshifterServerAPI.$inject = ['debug'];
 
 module.exports = CardshifterServerAPI;
