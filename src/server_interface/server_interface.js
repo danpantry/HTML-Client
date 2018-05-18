@@ -1,5 +1,4 @@
 'use strict';
-
 // checks if the string begins with either ws:// or wss://
 var wsProtocolFinder = /ws(s)?:\/\//;
 var SOCKET_OPEN = 1;
@@ -330,5 +329,6 @@ function CardshifterServerAPI(debug) {
         }
     };
 }
+CardshifterServerAPI.$inject = ['debug'];
 
 module.exports = CardshifterServerAPI;
